@@ -270,8 +270,12 @@ class Roo::Excelx < Roo::Base
     end]
 
     if cell_max
-      cell_count = ::Roo::Utils.num_cells_in_range(sheet_for(options.delete(:sheet)).dimensions)
-      raise ExceedsMaxError.new("Excel file exceeds cell maximum: #{cell_count} > #{cell_max}") if cell_count > cell_max
+      dimensions = sheet_for(options.delete(:sheet)).dimensions
+      # google spreadsheet exported to xlsx does not include dimensions
+      unless dimensions.nil?
+        cell_count = ::Roo::Utils.num_cells_in_range(dimensions)
+        raise ExceedsMaxError.new("Excel file exceeds cell maximum: #{cell_count} > #{cell_max}") if cell_count > cell_max
+      end
     end
 
     super
