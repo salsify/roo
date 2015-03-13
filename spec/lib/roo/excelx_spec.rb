@@ -5,6 +5,21 @@ describe Roo::Excelx do
     Roo::Excelx.new(path)
   end
 
+  describe 'google speadsheet export to xlsx' do
+    let(:path) { 'test/files/gdoc-to.xlsx' }
+    it 'creates an instance' do
+      expect(subject).to be_a(Roo::Excelx)
+    end
+
+    it 'returns the expected result' do
+      expect(subject.sheets).to eq ["Sheet1"]
+    end
+
+    it 'creates an instance' do
+      expect(Roo::Excelx.new(path, cell_max: 100)).to be_a(Roo::Excelx)
+    end
+  end
+
   describe '.new' do
     let(:path) { 'test/files/numeric-link.xlsx' }
 
