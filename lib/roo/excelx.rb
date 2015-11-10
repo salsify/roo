@@ -487,6 +487,7 @@ class Roo::Excelx < Roo::Base
   # Yield an array of Excelx::Cell
   # Takes options for sheet, pad_cells, and max_rows
   def each_row_streaming(options={})
+    return sheet_for(options.delete(:sheet)).to_enum(:each_row, options) unless block_given?
     sheet_for(options.delete(:sheet)).each_row(options) { |row| yield row }
   end
 
