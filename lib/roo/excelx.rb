@@ -163,10 +163,16 @@ class Roo::Excelx < Roo::Base
     # accepts options max_rows (int) (offset by 1 for header)
     # and pad_cells (boolean)
     def each_row(options = {}, &block)
+      return to_enum(:each_row, options, block) unless block_given?
+
       row_count = 0
+      options[:offset] ||= 0
       @sheet.each_row_streaming do |row|
-        break if options[:max_rows] && row_count == options[:max_rows] + 1
-        block.call(cells_for_row_element(row, options)) if block_given?
+        break if max_reached?(row_count, options[:max_rows], options[:offset])
+
+        if past_offset?(row_count, options[:offset])
+          yield cells_for_row_element(row, options)
+        end
         row_count += 1
       end
     end
@@ -220,6 +226,14 @@ class Roo::Excelx < Roo::Base
     end
 
     private
+
+    def max_reached?(current_row, max_row, offset)
+      max_row && current_row == max_row + offset + 1
+    end
+
+    def past_offset?(row_index, offset)
+      row_index > offset
+    end
 
     # Take an xml row and return an array of Excelx::Cell objects
     # optionally pad array to header width(assumed 1st row).
