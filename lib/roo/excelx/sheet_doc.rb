@@ -35,6 +35,8 @@ module Roo
     def each_cell(row_xml)
       return [] unless row_xml
       row_xml.children.each do |cell_element|
+        # Ignore empty lines
+        next if cell_element.is_a?(Nokogiri::XML::Text) && cell_element.text.strip.blank?
         key = ::Roo::Utils.ref_to_key(cell_element['r'])
         yield cell_from_xml(cell_element, hyperlinks(@relationships)[key])
       end
