@@ -35,12 +35,18 @@ module Roo
     def each_cell(row_xml)
       return [] unless row_xml
       row_xml.children.each do |cell_element|
+        # Ignore empty lines
+        next unless cell_element?(cell_element)
         key = ::Roo::Utils.ref_to_key(cell_element['r'])
         yield cell_from_xml(cell_element, hyperlinks(@relationships)[key])
       end
     end
 
     private
+    
+    def cell_element?(element)
+      element.node_type == Nokogiri::XML::Reader::TYPE_ELEMENT && element.name == 'c'
+    end
 
     def cell_from_xml(cell_xml, hyperlink)
       # This is error prone, to_i will silently turn a nil into a 0
