@@ -58,8 +58,13 @@ module Roo
       end
     end
 
+    def strip_qualifier(element_name)
+      element_name.gsub(/\$x:/, '')
+    end
+
     # Yield each element of a given type ('row', 'c', etc.) to caller
     def each_element(path, elements)
+      elements = elements.map { |element| strip_qualifier(element) }
       Nokogiri::XML::Reader(::File.open(path, 'rb'), nil, nil, Nokogiri::XML::ParseOptions::NOBLANKS).each do |node|
         next unless node.node_type == Nokogiri::XML::Reader::TYPE_ELEMENT && Array(elements).include?(node.name)
         yield Nokogiri::XML(node.outer_xml).root if block_given?
