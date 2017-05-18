@@ -90,6 +90,38 @@ RSpec.describe ::Roo::Utils do
     end
   end
 
+  context '.strip_qualifier' do
+    let(:xml_node_name) { 'x:row' }
+
+    it 'strips x: prefix' do
+      expect(described_class.strip_qualifier(xml_node_name)).to eq('row')
+    end
+
+    context 'has no x: prefix' do
+      let(:xml_node_name) { 'row' }
+
+      it 'returns the node name' do
+        expect(described_class.strip_qualifier(xml_node_name)).to eq('row')
+      end
+    end
+  end
+
+  context '.add_qualifier' do
+    let(:xml_node_name) { 'row' }
+
+    it 'adds x: prefix' do
+      expect(described_class.add_qualifier(xml_node_name)).to eq('x:row')
+    end
+
+    context 'starts with x:' do
+      let(:xml_node_name) { 'x:row' }
+
+      it 'returns the node name' do
+        expect(described_class.add_qualifier(xml_node_name)).to eq('x:row')
+      end
+    end
+  end
+
   context '.each_element' do
     it 'returns the expected result' do
       described_class.each_element('test/files/sheet1.xml', 'dimension') do |dim|
