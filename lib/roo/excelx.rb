@@ -272,6 +272,12 @@ class Roo::Excelx < Roo::Base
 
     @sheet_names = workbook.sheets.map { |sheet| sheet['name'] }
     @sheets = []
+    # The first sheet in the zipfile is not guaranteed to be sheet or sheet1
+    # If there is only a sheet2, you get [nil, sheet2] so we compact the file references to
+    # allow map.with_index to work as intended
+    @sheet_files.compact!
+    @comments_files.compact!
+    @rels_files.compact!
     @sheets_by_name = Hash[@sheet_names.map.with_index do |sheet_name, n|
       @sheets[n] = Sheet.new(sheet_name, @rels_files[n], @sheet_files[n], @comments_files[n], styles, shared_strings, workbook)
       [sheet_name, @sheets[n]]
@@ -430,12 +436,6 @@ class Roo::Excelx < Roo::Base
     cell = sheet.cells[key]
     !cell || !cell.value || (cell.type == :string && cell.value.empty?) \
       || (row < sheet.first_row || row > sheet.last_row || col < sheet.first_column || col > sheet.last_column)
-  end
-
-  # shows the internal representation of all cells
-  # for debugging purposes
-  def to_s(sheet=nil)
-    sheet_for(sheet).cells.inspect
   end
 
   # returns the row,col values of the labelled cell
