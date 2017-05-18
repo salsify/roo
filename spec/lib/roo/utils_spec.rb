@@ -102,5 +102,19 @@ RSpec.describe ::Roo::Utils do
       expect(rows.size).to eq 11
       expect(rows[2].attributes["r"].value).to eq "3"
     end
+
+    context "xml file leverages x: prefixing of attributes" do
+      it 'returns the expected result' do
+        described_class.each_element('test/files/sheet1_with_xprefix.xml', 'dimension') do |dim|
+          expect(dim.attributes["ref"].value).to eq "A1:B11"
+        end
+        rows = []
+        described_class.each_element('test/files/sheet1.xml', 'row') do |row|
+          rows << row
+        end
+        expect(rows.size).to eq 11
+        expect(rows[2].attributes["r"].value).to eq "3"
+      end
+    end
   end
 end
