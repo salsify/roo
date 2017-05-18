@@ -43,7 +43,7 @@ module Roo
     end
 
     private
-    
+
     def cell_element?(element)
       element.node_type == Nokogiri::XML::Reader::TYPE_ELEMENT && element.name == 'c'
     end
@@ -56,7 +56,7 @@ module Roo
       # <v>22606</v>
       # </c>, format: , tmp_type: float
       value_type =
-        case strip_qualifier(cell_xml['t'])
+        case Roo::Utils.strip_qualifier(cell_xml['t'])
         when 's'
           :shared
         when 'b'
@@ -76,7 +76,7 @@ module Roo
       formula = nil
       row, column = ::Roo::Utils.split_coordinate(cell_xml['r'])
       cell_xml.children.each do |cell|
-        case strip_qualifier(cell.name)
+        case Roo::Utils.strip_qualifier(cell.name)
         when 'is'
           cell.children.each do |inline_str|
             if inline_str.name == 't'
