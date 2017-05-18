@@ -109,7 +109,7 @@ RSpec.describe ::Roo::Utils do
           expect(dim.attributes["ref"].value).to eq "A1:B11"
         end
         rows = []
-        described_class.each_element('test/files/sheet1.xml', 'row') do |row|
+        described_class.each_element('test/files/sheet1_with_xprefix.xml', 'row') do |row|
           rows << row
         end
         expect(rows.size).to eq 11
