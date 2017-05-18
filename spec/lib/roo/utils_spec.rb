@@ -90,6 +90,46 @@ RSpec.describe ::Roo::Utils do
     end
   end
 
+  context '.strip_qualifier' do
+    let(:xml_node_name) { 'x:row' }
+
+    it 'strips x: prefix' do
+      expect(described_class.strip_qualifier(xml_node_name)).to eq('row')
+    end
+
+    context 'has no x: prefix' do
+      let(:xml_node_name) { 'row' }
+
+      it 'returns the node name' do
+        expect(described_class.strip_qualifier(xml_node_name)).to eq('row')
+      end
+    end
+
+    context 'nil' do
+      let(:xml_node_name) { nil }
+
+      it 'returns the node name' do
+        expect(described_class.strip_qualifier(xml_node_name)).to be_nil
+      end
+    end
+  end
+
+  context '.add_qualifier' do
+    let(:xml_node_name) { 'row' }
+
+    it 'adds x: prefix' do
+      expect(described_class.add_qualifier(xml_node_name)).to eq('x:row')
+    end
+
+    context 'starts with x:' do
+      let(:xml_node_name) { 'x:row' }
+
+      it 'returns the node name' do
+        expect(described_class.add_qualifier(xml_node_name)).to eq('x:row')
+      end
+    end
+  end
+
   context '.each_element' do
     it 'returns the expected result' do
       described_class.each_element('test/files/sheet1.xml', 'dimension') do |dim|
@@ -101,6 +141,20 @@ RSpec.describe ::Roo::Utils do
       end
       expect(rows.size).to eq 11
       expect(rows[2].attributes["r"].value).to eq "3"
+    end
+
+    context "xml file leverages x: prefixing of attributes" do
+      it 'returns the expected result' do
+        described_class.each_element('test/files/sheet1_with_xprefix.xml', 'dimension') do |dim|
+          expect(dim.attributes["ref"].value).to eq "A1:B11"
+        end
+        rows = []
+        described_class.each_element('test/files/sheet1_with_xprefix.xml', 'row') do |row|
+          rows << row
+        end
+        expect(rows.size).to eq 11
+        expect(rows[2].attributes["r"].value).to eq "3"
+      end
     end
   end
 end

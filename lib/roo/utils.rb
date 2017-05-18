@@ -2,6 +2,7 @@ module Roo
   module Utils
     extend self
 
+    X_NAMESPACE = /^x:/
     LETTERS = ('A'..'Z').to_a
     CODEPOINT_OFFSET = 'A'.ord - 1
 
@@ -58,10 +59,19 @@ module Roo
       end
     end
 
+    def strip_qualifier(element_name)
+      element_name.gsub(X_NAMESPACE, '') if element_name
+    end
+
+    def add_qualifier(element_name)
+      element_name =~ X_NAMESPACE ? element_name : "x:#{element_name}"
+    end
+
     # Yield each element of a given type ('row', 'c', etc.) to caller
     def each_element(path, elements)
+      elements = elements.is_a?(Array) ? Set.new(elements.flat_map { |element| [add_qualifier(element), strip_qualifier(element)] }) : Set.new([add_qualifier(elements), strip_qualifier(elements)])
       Nokogiri::XML::Reader(::File.open(path, 'rb'), nil, nil, Nokogiri::XML::ParseOptions::NOBLANKS).each do |node|
-        next unless node.node_type == Nokogiri::XML::Reader::TYPE_ELEMENT && Array(elements).include?(node.name)
+        next unless node.node_type == Nokogiri::XML::Reader::TYPE_ELEMENT && elements.include?(node.name)
         yield Nokogiri::XML(node.outer_xml).root if block_given?
       end
     end
