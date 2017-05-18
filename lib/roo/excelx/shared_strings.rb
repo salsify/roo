@@ -18,7 +18,7 @@ module Roo
         doc.xpath("/sst/si").map do |si|
           shared_string = ''
           si.children.each do |elem|
-            case strip_qualifier(elem.name)
+            case Roo::Utils.strip_qualifier(elem.name)
               when 'r'
                 elem.children.each do |r_elem|
                   if r_elem.name == 't'
