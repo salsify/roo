@@ -2,6 +2,7 @@ module Roo
   module Utils
     extend self
 
+    X_NAMESPACE = /^x:/
     LETTERS = ('A'..'Z').to_a
     CODEPOINT_OFFSET = 'A'.ord - 1
 
@@ -59,11 +60,11 @@ module Roo
     end
 
     def strip_qualifier(element_name)
-      element_name.gsub(/^x:/, '') if element_name
+      element_name.gsub(X_NAMESPACE, '') if element_name
     end
 
     def add_qualifier(element_name)
-      "x:#{element_name}"
+      element_name =~ X_NAMESPACE ? element_name : "x:#{element_name}"
     end
 
     # Yield each element of a given type ('row', 'c', etc.) to caller
