@@ -104,6 +104,14 @@ RSpec.describe ::Roo::Utils do
         expect(described_class.strip_qualifier(xml_node_name)).to eq('row')
       end
     end
+
+    context 'nil' do
+      let(:xml_node_name) { nil }
+
+      it 'returns the node name' do
+        expect(described_class.strip_qualifier(xml_node_name)).to be_nil
+      end
+    end
   end
 
   context '.add_qualifier' do
