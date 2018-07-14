@@ -122,11 +122,18 @@ module Roo
     end
 
     def extract_hyperlinks(relationships)
-      Hash[doc.xpath("/worksheet/hyperlinks/hyperlink").map do |hyperlink|
-        if hyperlink.attribute('id') && relationship = relationships[hyperlink.attribute('id').text]
-          [::Roo::Utils.ref_to_key(hyperlink.attributes['ref'].to_s), relationship.attribute('Target').text]
+      hyperlinks = {}
+
+      Roo::Utils.each_element(@path, 'hyperlinks') do |hyperlinks_xml|
+        hyperlinks_xml.children.each do |hyperlink|
+          if hyperlink.attribute('id') && relationship = relationships[hyperlink.attribute('id').text]
+            key = ::Roo::Utils.ref_to_key(hyperlink.attributes['ref'].to_s)
+            hyperlinks[key] = relationship.attribute('Target').text
+          end
         end
-      end.compact]
+      end
+
+      hyperlinks
     end
 
     def extract_cells(relationships)
