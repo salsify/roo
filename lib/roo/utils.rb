@@ -111,7 +111,6 @@ module Roo
 
     # Yield each element of a given type ('row', 'c', etc.) to caller
     def each_element(path, elements)
-      elements = Array(elements)
       elements = if elements.is_a?(Array)
                    Set.new(elements.flat_map { |element| [add_qualifier(element), strip_qualifier(element)] })
                  else
