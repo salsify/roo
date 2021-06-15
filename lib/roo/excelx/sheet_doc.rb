@@ -63,7 +63,7 @@ module Roo
       end
 
       def cell_value_type(type, format)
-        case type
+        case Roo::Utils.strip_qualifier(type)
         when 's'
           :shared
         when 'b'

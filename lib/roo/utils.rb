@@ -112,6 +112,11 @@ module Roo
     # Yield each element of a given type ('row', 'c', etc.) to caller
     def each_element(path, elements)
       elements = Array(elements)
+      elements = if elements.is_a?(Array)
+                   Set.new(elements.flat_map { |element| [add_qualifier(element), strip_qualifier(element)] })
+                 else
+                   Set.new([add_qualifier(elements), strip_qualifier(elements)])
+                 end
       Nokogiri::XML::Reader(::File.open(path, 'rb'), nil, nil, Nokogiri::XML::ParseOptions::NOBLANKS).each do |node|
         next unless node.node_type == Nokogiri::XML::Reader::TYPE_ELEMENT && elements.include?(node.name)
         yield Nokogiri::XML(node.outer_xml).root if block_given?
