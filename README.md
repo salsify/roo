@@ -1,122 +1,313 @@
-# Roo [![Build Status](https://travis-ci.org/roo-rb/roo.svg)](https://travis-ci.org/roo-rb/roo)[![Code Climate](https://codeclimate.com/github/roo-rb/roo/badges/gpa.svg)](https://codeclimate.com/github/roo-rb/roo)[![Coverage Status](https://coveralls.io/repos/roo-rb/roo/badge.png)](https://coveralls.io/r/roo-rb/roo)
+# Roo
 
-Roo implements read access for all spreadsheet types and read/write access for
-Google spreadsheets. It can handle
-* Excelx
-* OpenOffice / LibreOffice
+[![Build Status](https://img.shields.io/travis/roo-rb/roo.svg?style=flat-square)](https://travis-ci.org/roo-rb/roo) [![Maintainability](https://api.codeclimate.com/v1/badges/be8d7bf34e2aeaf67c62/maintainability)](https://codeclimate.com/github/roo-rb/roo/maintainability) [![Coverage Status](https://img.shields.io/coveralls/roo-rb/roo.svg?style=flat-square)](https://coveralls.io/r/roo-rb/roo) [![Gem Version](https://img.shields.io/gem/v/roo.svg?style=flat-square)](https://rubygems.org/gems/roo)
+
+Roo implements read access for all common spreadsheet types. It can handle:
+* Excel 2007 - 2013 formats (xlsx, xlsm)
+* LibreOffice / OpenOffice.org formats (ods)
 * CSV
+* Excel 97, Excel 2002 XML, and Excel 2003 XML formats when using the [roo-xls](https://github.com/roo-rb/roo-xls) gem (xls, xml)
+* Google spreadsheets with read/write access when using [roo-google](https://github.com/roo-rb/roo-google)
 
-## Additional libraries
+## Installation
 
-In addition, the roo-xls and roo-google gems exist to Google Spreadsheet add classic Excel
-handling capabilities to roo.
+Install as a gem
 
-## Usage:
+    $ gem install roo
+
+Or add it to your Gemfile
+
+```ruby
+gem "roo", "~> 2.8.0"
+```
+## Usage
+
+Opening a spreadsheet
 
 ```ruby
 require 'roo'
 
-s = Roo::OpenOffice.new("myspreadsheet.ods")      # loads an OpenOffice Spreadsheet
-s = Roo::Excelx.new("myspreadsheet.xlsx")         # loads an Excel Spreadsheet for Excel .xlsx files
-s = Roo::CSV.new("mycsv.csv")                     # loads a CSV file
+xlsx = Roo::Spreadsheet.open('./new_prices.xlsx')
+xlsx = Roo::Excelx.new("./new_prices.xlsx")
 
-# You can use CSV to load TSV files, or files of a certain encoding by passing
-# in options under the :csv_options key
-s = Roo::CSV.new("mytsv.tsv", csv_options: {col_sep: "\t"}) # TSV
-s = Roo::CSV.new("mycsv.csv", csv_options: {encoding: Encoding::ISO_8859_1}) # csv with explicit encoding
+# Use the extension option if the extension is ambiguous.
+xlsx = Roo::Spreadsheet.open('./rails_temp_upload', extension: :xlsx)
 
-s.default_sheet = s.sheets.first             # first sheet in the spreadsheet file will be used
+xlsx.info
+# => Returns basic info about the spreadsheet file
+```
 
-# s.sheets is an array which holds the names of the sheets within
-# a spreadsheet.
-# you can also write
-# s.default_sheet = s.sheets[3] or
-# s.default_sheet = 'Sheet 3'
+``Roo::Spreadsheet.open`` can accept both paths and ``File`` instances.
 
-s.cell(1,1)                                 # returns the content of the first row/first cell in the sheet
-s.cell('A',1)                               # same cell
-s.cell(1,'A')                               # same cell
-s.cell(1,'A',s.sheets[0])                   # same cell
+### Working with sheets
 
-# almost all methods have an optional argument 'sheet'.
-# If this parameter is omitted, the default_sheet will be used.
+```ruby
+ods.sheets
+# => ['Info', 'Sheet 2', 'Sheet 3']   # an Array of sheet names in the workbook
 
-s.info                                      # prints infos about the spreadsheet file
+ods.sheet('Info').row(1)
+ods.sheet(0).row(1)
 
-s.first_row                                 # the number of the first row
-s.last_row                                  # the number of the last row
-s.first_column                              # the number of the first column
-s.last_column                               # the number of the last column
+# Set the last sheet as the default sheet.
+ods.default_sheet = ods.sheets.last
+ods.default_sheet = ods.sheets[2]
+ods.default_sheet = 'Sheet 3'
 
-# limited font information is available
-
-s.font(1,1).bold?
-s.font(1,1).italic?
-s.font(1,1).underline?
-
-
-# Roo::Spreadsheet requires spreadsheet gem
-require 'spreadsheet'
-
-# Spreadsheet.open can accept both files and paths
-
-xls = Roo::Spreadsheet.open('./new_prices.xls')
-
-# If the File.path or provided path string does not have an extension, you can optionally
-# provide one as a string or symbol
-
-xls = Roo::Spreadsheet.open('./rails_temp_upload', extension: :xls)
-
-# no more setting xls.default_sheet, just use this
-
-xls.sheet('Info').row(1)
-xls.sheet(0).row(1)
-
-# excel likes to create random "Data01" sheets for macros
-# use this to find the sheet with the most data to parse
-
-xls.longest_sheet
-
-# this excel file has multiple worksheets, let's iterate through each of them and process
-
-xls.each_with_pagename do |name, sheet|
+# Iterate through each sheet
+ods.each_with_pagename do |name, sheet|
   p sheet.row(1)
 end
-
-# pull out a hash of exclusive column data (get rid of useless columns and save memory)
-
-xls.each(:id => 'UPC',:qty => 'ATS') {|hash| arr << hash}
-#=> hash will appear like {:upc=>727880013358, :qty => 12}
-
-# NOTE: .parse does the same as .each, except it returns an array (similar to each vs. map)
-
-# not sure exactly what a column will be named? try a wildcard search with the character *
-# regex characters are allowed ('^price\s')
-# case insensitive
-
-xls.parse(:id => 'UPC*SKU',:qty => 'ATS*\sATP\s*QTY$')
-
-# if you need to locate the header row and assign the header names themselves,
-# use the :header_search option
-
-xls.parse(:header_search => ['UPC*SKU','ATS*\sATP\s*QTY$'])
-#=> each element will appear in this fashion:
-#=> {"UPC" => 123456789012, "STYLE" => "987B0", "COLOR" => "blue", "QTY" => 78}
-
-# want to strip out annoying unicode characters and surrounding white space?
-
-xls.parse(:clean => true)
-
-# another bonus feature is a patch to prevent the Spreadsheet gem from parsing
-# thousands and thousands of blank lines. i got fed up after watching my computer
-# nearly catch fire for 4 hours for a spreadsheet with only 200 ACTUAL lines
-# - located in lib/roo/worksheet.rb
-
-# if you want to load and stream .xlsx rows
-
-s = Roo::Excelx.new("./test_data/test_small.xlsx")
-s.each_row_streaming do |row|
-    puts row.inspect # Array of Excelx::Cell objects
-end
-
 ```
+
+### Accessing rows and columns
+
+Roo uses Excel's numbering for rows, columns and cells, so `1` is the first index, not `0` as it is in an ``Array``
+
+```ruby
+sheet.row(1)
+# returns the first row of the spreadsheet.
+
+sheet.column(1)
+# returns the first column of the spreadsheet.
+```
+
+Almost all methods have an optional argument `sheet`. If this parameter is omitted, the default_sheet will be used.
+
+```ruby
+sheet.first_row(sheet.sheets[0])
+# => 1             # the number of the first row
+sheet.last_row
+# => 42            # the number of the last row
+sheet.first_column
+# => 1             # the number of the first column
+sheet.last_column
+# => 10            # the number of the last column
+```
+
+#### Accessing cells
+
+You can access the top-left cell in the following ways
+
+```ruby
+sheet.cell(1,1)
+sheet.cell('A',1)
+sheet.cell(1,'A')
+sheet.a1
+
+# Access the second sheet's top-left cell.
+sheet.cell(1,'A',sheet.sheets[1])
+```
+
+#### Querying a spreadsheet
+Use ``each`` to iterate over each row.
+
+If each is given a hash with the names of some columns, then each will generate a hash with the columns supplied for each row.
+
+```ruby
+sheet.each(id: 'ID', name: 'FULL_NAME') do |hash|
+  puts hash.inspect
+  # => { id: 1, name: 'John Smith' }
+end
+```
+
+Use ``sheet.parse`` to return an array of rows. Column names can be a ``String`` or a ``Regexp``.
+
+```ruby
+sheet.parse(id: /UPC|SKU/, qty: /ATS*\sATP\s*QTY\z/)
+# => [{:id => 727880013358, :qty => 12}, ...]
+```
+
+Use the ``:headers`` option to include the header row in the parsed content.
+
+```ruby
+sheet.parse(headers: true)
+```
+
+Use the ``:header_search`` option to locate the header row and assign the header names.
+
+```ruby
+sheet.parse(header_search: [/UPC*SKU/,/ATS*\sATP\s*QTY\z/])
+```
+
+Use the ``:clean`` option to strip out control characters and surrounding white space.
+
+```ruby
+sheet.parse(clean: true)
+```
+
+#### Options
+
+When opening the file you can add a hash of options.
+
+##### expand_merged_ranges
+If you open a document with merged cells and do not want to end up with nil values for the rows after the first one.
+```ruby
+xlsx = Roo::Excelx.new('./roo_error.xlsx', {:expand_merged_ranges => true})
+```
+
+### Exporting spreadsheets
+Roo has the ability to export sheets using the following formats. It
+will only export the ``default_sheet``.
+
+```ruby
+sheet.to_csv
+sheet.to_matrix
+sheet.to_xml
+sheet.to_yaml
+```
+
+### Excel (xlsx and xlsm) Support
+
+Stream rows from an Excelx spreadsheet.
+
+```ruby
+xlsx = Roo::Excelx.new("./test_data/test_small.xlsx")
+xlsx.each_row_streaming do |row|
+  puts row.inspect # Array of Excelx::Cell objects
+end
+```
+
+By default blank cells will be excluded from the array. To keep them, use the option pad_cells = true. (They will be set to nil in the array)
+```ruby
+xlsx.each_row_streaming(pad_cells: true) do |row|
+  puts row.inspect # Array of Excelx::Cell objects
+end
+```
+
+To stream only some of the rows, you can use the ```max_rows``` and ```offset```options.
+```ruby
+xlsx.each_row_streaming(offset: 1) do |row| # Will exclude first (inevitably header) row
+  puts row.inspect # Array of Excelx::Cell objects
+end
+```
+
+```ruby
+xlsx.each_row_streaming(max_rows: 3) do |row| # Will yield 4 rows (it's automatically incremented by 1) after the supplied offset.
+  puts row.inspect # Array of Excelx::Cell objects
+end
+```
+
+Iterate over each row
+
+```ruby
+xlsx.each_row do |row|
+  ...
+end
+```
+
+``Roo::Excelx`` also provides these helpful methods.
+
+```ruby
+xlsx.excelx_type(3, 'C')
+# => :numeric_or_formula
+
+xlsx.cell(3, 'C')
+# => 600000383.0
+
+xlsx.excelx_value(row,col)
+# => '600000383'
+
+xlsx.formatted_value(row,col)
+# => '0600000383'
+```
+
+``Roo::Excelx`` can access celltype, comments, font information, formulas, hyperlinks and labels.
+
+```ruby
+xlsx.comment(1,1, ods.sheets[-1])
+xlsx.font(1,1).bold?
+xlsx.formula('A', 2)
+```
+
+### OpenOffice / LibreOffice Support
+
+Roo::OpenOffice has support for encrypted OpenOffice spreadsheets.
+
+```ruby
+# Load an encrypted OpenOffice Spreadsheet
+ods = Roo::OpenOffice.new("myspreadsheet.ods", password: "password")
+```
+
+``Roo::OpenOffice`` can access celltype, comments, font information, formulas and labels.
+
+```ruby
+ods.celltype
+# => :percentage
+
+ods.comment(1,1, ods.sheets[-1])
+
+ods.font(1,1).italic?
+# => false
+
+ods.formula('A', 2)
+```
+
+### CSV Support
+
+```ruby
+# Load a CSV file
+csv = Roo::CSV.new("mycsv.csv")
+```
+
+Because Roo uses the standard CSV library, you can use options available to that library to parse csv files. You can pass options using the ``csv_options`` key.
+
+For instance, you can load tab-delimited files (``.tsv``), and you can use a particular encoding when opening the file.
+
+
+```ruby
+# Load a tab-delimited csv
+csv = Roo::CSV.new("mytsv.tsv", csv_options: {col_sep: "\t"})
+
+# Load a csv with an explicit encoding
+csv = Roo::CSV.new("mycsv.csv", csv_options: {encoding: Encoding::ISO_8859_1})
+```
+
+You can also open csv files through the Roo::Spreadsheet class (useful if you accept both CSV and Excel types from a user file upload, for example).
+
+```ruby
+# Load a spreadsheet from a file path
+# Roo figures out the right parser based on file extension
+spreadsheet = Roo::Spreadsheet.open(csv_or_xlsx_file)
+
+# Load a csv and auto-strip the BOM (byte order mark)
+# csv files saved from MS Excel typically have the BOM marker at the beginning of the file
+spreadsheet = Roo::Spreadsheet.open("mycsv.csv", { csv_options: { encoding: 'bom|utf-8' } })
+```
+
+## Upgrading from Roo 1.13.x
+If you use ``.xls`` or Google spreadsheets, you will need to install ``roo-xls`` or ``roo-google`` to continue using that functionality.
+
+Roo's public methods have stayed relatively consistent between 1.13.x and 2.0.0, but please check the [Changelog](https://github.com/roo-rb/roo/blob/master/CHANGELOG.md) to better understand the changes made since 1.13.x.
+
+
+
+## Contributing
+### Features
+1. Fork it ( https://github.com/roo-rb/roo/fork )
+2. Install it (`bundle install --with local_development`)
+3. Create your feature branch (`git checkout -b my-new-feature`)
+4. Commit your changes (`git commit -am 'My new feature'`)
+5. Push to the branch (`git push origin my-new-feature`)
+6. Create a new Pull Request
+
+### Testing
+Roo uses Minitest and RSpec. The best of both worlds! Run `bundle exec rake` to
+run the tests/examples.
+
+You can run the tests/examples with Rspec like reporters by running
+`USE_REPORTERS=true bundle exec rake`
+
+Roo also has a few tests that take a long time (5+ seconds). To run these, use
+`LONG_RUN=true bundle exec rake`
+
+### Issues
+
+If you find an issue, please create a gist and refer to it in an issue ([sample gist](https://gist.github.com/stevendaniels/98a05849036e99bb8b3c)). Here are some instructions for creating such a gist.
+
+1. [Create a gist](https://gist.github.com) with code that creates the error.
+2. Clone the gist repo locally, add a stripped down version of the offending spreadsheet to the gist repo, and push the gist's changes master.
+3. Paste the gist url here.
+
+
+## License
+[Roo uses an MIT License](https://github.com/roo-rb/roo/blob/master/LICENSE)
