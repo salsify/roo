@@ -400,7 +400,7 @@ class Roo::Base
       # ex. if UPC and SKU exist for UPC*SKU search, UPC takes the cake
       headers = query.map do |q|
         q.map do |i|
-          #if header has brackets in it for ex: date(yyyy-mm-dd), 
+          #if header has brackets in it for ex: date(yyyy-mm-dd),
           #can add other special characterss to this list.
           if i.include?('(')
             row.grep(i)[0]
@@ -595,7 +595,7 @@ class Roo::Base
     tempfilename = File.join(tmpdir, File.basename(uri))
     begin
       File.open(tempfilename, 'wb') do |file|
-        open(uri, 'User-Agent' => "Ruby/#{RUBY_VERSION}") do |net|
+        URI.open(uri, 'User-Agent' => "Ruby/#{RUBY_VERSION}") do |net|
           file.write(net.read)
         end
       end
