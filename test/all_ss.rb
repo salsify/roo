@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'roo'
 Dir.glob("test/files/*.ods").each do |fn|
 	begin

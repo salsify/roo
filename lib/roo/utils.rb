@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Roo
   module Utils
     extend self

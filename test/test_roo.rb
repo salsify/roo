@@ -1,4 +1,5 @@
 # encoding: utf-8
+# frozen_string_literal: true
 # damit keine falschen Vermutungen aufkommen: Ich habe religioes rein gar nichts
 # mit diesem Bibelbund zu tun, aber die hatten eine ziemlich grosse
 # Spreadsheet-Datei mit ca. 3500 Zeilen oeffentlich im Netz, die sich ganz gut

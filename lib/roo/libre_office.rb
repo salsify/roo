@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'roo/open_office'
 
 # LibreOffice is just an alias for Roo::OpenOffice class

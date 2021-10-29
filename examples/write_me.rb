@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'roo'
 
 #-- create a new spreadsheet within your google-spreadsheets and paste

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Roo
   autoload :Spreadsheet,  'roo/spreadsheet'
   autoload :Base,         'roo/base'

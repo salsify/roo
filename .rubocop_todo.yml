@@ -786,52 +786,6 @@ Style/FormatString:
 Style/FormatStringToken:
   EnforcedStyle: unannotated
 
-# Offense count: 39
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: always, always_true, never
-Style/FrozenStringLiteralComment:
-  Exclude:
-    - '.simplecov'
-    - 'Gemfile'
-    - 'Guardfile'
-    - 'Rakefile'
-    - 'examples/roo_soap_client.rb'
-    - 'examples/roo_soap_server.rb'
-    - 'examples/write_me.rb'
-    - 'lib/roo.rb'
-    - 'lib/roo/base.rb'
-    - 'lib/roo/csv.rb'
-    - 'lib/roo/excelx.rb'
-    - 'lib/roo/excelx/comments.rb'
-    - 'lib/roo/excelx/extractor.rb'
-    - 'lib/roo/excelx/relationships.rb'
-    - 'lib/roo/excelx/shared_strings.rb'
-    - 'lib/roo/excelx/sheet_doc.rb'
-    - 'lib/roo/excelx/styles.rb'
-    - 'lib/roo/excelx/workbook.rb'
-    - 'lib/roo/font.rb'
-    - 'lib/roo/libre_office.rb'
-    - 'lib/roo/link.rb'
-    - 'lib/roo/open_office.rb'
-    - 'lib/roo/spreadsheet.rb'
-    - 'lib/roo/utils.rb'
-    - 'lib/roo/version.rb'
-    - 'roo.gemspec'
-    - 'spec/lib/roo/base_spec.rb'
-    - 'spec/lib/roo/csv_spec.rb'
-    - 'spec/lib/roo/excelx/format_spec.rb'
-    - 'spec/lib/roo/excelx_spec.rb'
-    - 'spec/lib/roo/libreoffice_spec.rb'
-    - 'spec/lib/roo/openoffice_spec.rb'
-    - 'spec/lib/roo/spreadsheet_spec.rb'
-    - 'spec/lib/roo/utils_spec.rb'
-    - 'spec/spec_helper.rb'
-    - 'test/all_ss.rb'
-    - 'test/test_generic_spreadsheet.rb'
-    - 'test/test_helper.rb'
-    - 'test/test_roo.rb'
-
 # Offense count: 1
 # Cop supports --auto-correct.
 Style/GlobalStdStream:
