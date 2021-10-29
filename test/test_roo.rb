@@ -404,7 +404,7 @@ class TestRoo < Minitest::Test
       letter = 'e'
       while letter <= 'u'
         assert_equal expected, oo.cell(letter,1)
-        letter.succ!
+        letter = letter.next
         expected += 1
       end
       assert_equal 'J', oo.cell('v',1)

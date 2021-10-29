@@ -29,7 +29,7 @@ module Roo
 
     # convert a number to something like 'AB' (1 => 'A', 2 => 'B', ...)
     def number_to_letter(n)
-      letters = ''
+      letters = +''
       while n > 0
         index = (n - 1) % 26
         letters.prepend(LETTERS[index])

@@ -106,7 +106,7 @@ class Roo::Base
     from_column ||= first_column(sheet)
     to_column ||= last_column(sheet)
 
-    result = "--- \n"
+    result = +"--- \n"
     from_row.upto(to_row) do |row|
       from_column.upto(to_column) do |col|
         unless empty?(row, col, sheet)
@@ -242,7 +242,7 @@ class Roo::Base
   # this document.
   def info
     without_changing_default_sheet do
-      result = "File: #{File.basename(@filename)}\n"\
+      result = +"File: #{File.basename(@filename)}\n"\
         "Number of sheets: #{sheets.size}\n"\
         "Sheets: #{sheets.join(', ')}\n"
       n = 1
