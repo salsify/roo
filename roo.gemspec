@@ -18,6 +18,8 @@ Gem::Specification.new do |spec|
   spec.test_files    = spec.files.grep(%r{^(test|spec|features)/})
   spec.require_paths = ['lib']
 
+  spec.required_ruby_version = '>= 2.6'
+
   spec.add_dependency 'nokogiri'
   spec.add_dependency 'rubyzip', '>= 1.0.0'
   spec.add_dependency 'addressable'
