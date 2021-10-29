@@ -110,9 +110,9 @@ module Roo
             when :string
               excelx_type = :string
               cell.content
-              else
+            else
               val = Integer(cell.content) rescue Float(cell.content) rescue cell.content
-              value_type =  val && val.is_a?(Float) ? :float : :string
+              value_type =  val && val.is_a?(Numeric) ? :float : :string
               val
             end
           return Excelx::Cell.new(value,value_type,formula,excelx_type,cell.content,style, hyperlink, @workbook.base_date, Excelx::Cell::Coordinate.new(row, column))
