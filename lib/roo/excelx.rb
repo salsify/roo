@@ -82,7 +82,7 @@ class Roo::Excelx < Roo::Base
     def initialize(value, type, formula, excelx_type, excelx_value, style, hyperlink, base_date, coordinate)
       @type = type
       @formula = formula
-      @base_date = base_date if [:date, :datetime].include?(@type)
+      @base_date = base_date if @type == :date || @type == :datetime
       @excelx_type = excelx_type
       @excelx_value = excelx_value
       @style = style
@@ -105,7 +105,8 @@ class Roo::Excelx < Roo::Base
       attr_accessor :row, :column
 
       def initialize(row, column)
-        @row, @column = row, column
+        @row = row
+        @column = column
       end
     end
 
