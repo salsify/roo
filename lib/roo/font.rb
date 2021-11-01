@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Roo
   class Font
     attr_accessor :bold, :italic, :underline

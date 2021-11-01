@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'soap/rpc/driver'
 
 def ferien_fuer_region(proxy, region, year = nil)

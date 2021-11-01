@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Roo
   class Spreadsheet
     class << self
@@ -22,7 +24,7 @@ module Roo
           options[:file_warning] = :ignore
           extension.tr('.', '').downcase.to_sym
         else
-          res = ::File.extname((path =~ ::URI.regexp) ? ::URI.parse(::URI.encode(path)).path : path)
+          res = ::File.extname((path =~ ::URI.regexp) ? ::URI.parse(::Addressable::URI.encode(path)).path : path)
           res.tr('.', '').downcase.to_sym
         end
       end

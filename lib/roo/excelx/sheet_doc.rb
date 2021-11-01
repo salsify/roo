@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require 'roo/excelx/extractor'
 
 module Roo
@@ -110,7 +112,7 @@ module Roo
             when :string
               excelx_type = :string
               cell.content
-              else
+            else
               val = Integer(cell.content) rescue Float(cell.content) rescue cell.content
               value_type =  val && val.is_a?(Float) ? :float : :string
               val

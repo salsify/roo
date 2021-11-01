@@ -1,4 +1,5 @@
 # encoding: utf-8
+# frozen_string_literal: true
 
 require 'tmpdir'
 require 'stringio'
@@ -105,7 +106,7 @@ class Roo::Base
     from_column ||= first_column(sheet)
     to_column ||= last_column(sheet)
 
-    result = "--- \n"
+    result = +"--- \n"
     from_row.upto(to_row) do |row|
       from_column.upto(to_column) do |col|
         unless empty?(row, col, sheet)
@@ -241,7 +242,7 @@ class Roo::Base
   # this document.
   def info
     without_changing_default_sheet do
-      result = "File: #{File.basename(@filename)}\n"\
+      result = +"File: #{File.basename(@filename)}\n"\
         "Number of sheets: #{sheets.size}\n"\
         "Sheets: #{sheets.join(', ')}\n"
       n = 1
@@ -400,7 +401,7 @@ class Roo::Base
       # ex. if UPC and SKU exist for UPC*SKU search, UPC takes the cake
       headers = query.map do |q|
         q.map do |i|
-          #if header has brackets in it for ex: date(yyyy-mm-dd), 
+          #if header has brackets in it for ex: date(yyyy-mm-dd),
           #can add other special characterss to this list.
           if i.include?('(')
             row.grep(i)[0]
@@ -595,7 +596,7 @@ class Roo::Base
     tempfilename = File.join(tmpdir, File.basename(uri))
     begin
       File.open(tempfilename, 'wb') do |file|
-        open(uri, 'User-Agent' => "Ruby/#{RUBY_VERSION}") do |net|
+        URI.open(uri, 'User-Agent' => "Ruby/#{RUBY_VERSION}") do |net|
           file.write(net.read)
         end
       end
