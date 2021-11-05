@@ -274,7 +274,7 @@ class Roo::OpenOffice < Roo::Base
               style_name = attr(cell,'style-name')
               case value_type
               when 'string'
-                str_v  = ''
+                str_v  = +''
                 # insert \n if there is more than one paragraph
                 para_count = 0
                 cell.children.each do |str|
@@ -406,7 +406,7 @@ class Roo::OpenOffice < Roo::Base
   # helper method to convert compressed spaces and other elements within
   # an text into a string
   def children_to_string(children)
-    result = ''
+    result = +''
     children.each {|child|
       if child.text?
         result = result + child.content
