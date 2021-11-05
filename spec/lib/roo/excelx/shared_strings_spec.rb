@@ -98,7 +98,7 @@ describe Roo::Excelx::SharedStrings do
     end
 
     it "creates an array of strings" do
-      expect(described_class.new(@filepath).to_a).to eq(["Cell A1", "Cell B1", "My Cell", "Cell A2", "Cell B2"])
+      expect(described_class.new(@filepath).to_a).to eq(['Cell A1', 'Cell B1', 'My Cell', 'Cell A2', 'Cell B2'])
     end
   end
 end
