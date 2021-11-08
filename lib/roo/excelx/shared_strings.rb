@@ -18,7 +18,7 @@ module Roo
       if doc_exists?
         # read the shared strings xml document
         doc.xpath("/sst/si").map do |si|
-          shared_string = ''
+          shared_string = +''
           si.children.each do |elem|
             case Roo::Utils.strip_qualifier(elem.name)
               when 'r'
