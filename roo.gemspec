@@ -21,6 +21,8 @@ Gem::Specification.new do |spec|
 
   spec.required_ruby_version = '>= 2.6'
 
+  spec.add_dependency 'csv'
+  spec.add_dependency 'matrix'
   spec.add_dependency 'nokogiri'
   spec.add_dependency 'rubyzip', '>= 3.4.0'
   spec.add_dependency 'addressable'
