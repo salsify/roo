@@ -19,7 +19,7 @@ class Roo::OpenOffice < Roo::Base
     #TODO: @cells_read[:default] = false
     Zip::File.open(@filename) do |zip_file|
       if content_entry = zip_file.glob("content.xml").first
-        content_entry.extract(File.join(@tmpdir, 'roo_content.xml'))
+        content_entry.extract('roo_content.xml', destination_directory: @tmpdir)
       else
         raise ArgumentError, 'file missing required content.xml'
       end

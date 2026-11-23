@@ -538,7 +538,7 @@ class Roo::Excelx < Roo::Base
           @rels_files[nr.to_i-1] = "#{tmpdir}/roo_rels#{nr}"
         end
       if path
-        entry.extract(path)
+        entry.extract(File.basename(path), destination_directory: tmpdir)
       end
     end
   end

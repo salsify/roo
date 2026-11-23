@@ -1,24 +1,32 @@
 version: 2.1
+
+aws-auth: &aws-auth
+  aws_auth:
+    aws_access_key_id: $ECR_AWS_ACCESS_KEY_ID
+    aws_secret_access_key: $ECR_AWS_SECRET_ACCESS_KEY
+
 jobs:
   lint:
       docker:
-        - image: salsify/ruby_ci:2.6.8
+        - image: $SALSIFY_ECR_REPO/ruby-ci-3_3_14
+          <<: *aws-auth
       working_directory: ~/roo
       steps:
         - checkout
         - restore_cache:
             keys:
-              - v1-gems-ruby-2.6.8-{{ checksum "roo.gemspec" }}-{{ checksum "Gemfile" }}
-              - v1-gems-ruby-2.6.8-
+              - v1-gems-ruby-3.3.14-{{ checksum "roo.gemspec" }}-{{ checksum "Gemfile" }}
+              - v1-gems-ruby-3.3.14-
         - run:
             name: Install Gems
             command: |
-              if ! bundle check --path=vendor/bundle; then
-                bundle install --path=vendor/bundle --jobs=4 --retry=3
+              bundle config set path 'vendor/bundle'
+              if ! bundle check; then
+                bundle install --jobs=4 --retry=3
                 bundle clean
               fi
         - save_cache:
-            key: v1-gems-ruby-2.6.8-{{ checksum "roo.gemspec" }}-{{ checksum "Gemfile" }}
+            key: v1-gems-ruby-3.3.14-{{ checksum "roo.gemspec" }}-{{ checksum "Gemfile" }}
             paths:
               - "vendor/bundle"
               - "gemfiles/vendor/bundle"
@@ -32,14 +40,16 @@ jobs:
         ruby_version:
           type: string
       docker:
-        - image: salsify/ruby_ci:<< parameters.ruby_version >>
+        - image: $SALSIFY_ECR_REPO/ruby-ci-<< parameters.ruby_version >>
+          <<: *aws-auth
           environment:
             DB_USER: "circleci"
-        - image: circleci/postgres:9.6
+        - image: cimg/postgres:14.4
           environment:
-            POSTGRES_USER: "circleci"
+            POSTGRES_USER: "ubuntu"
             POSTGRES_DB: "circle_test"
             POSTGRES_HOST_AUTH_METHOD: "trust"
+            PSQL_PAGER: ""
       environment:
         RACK_ENV: "test"
         RAILS_ENV: "test"
@@ -55,8 +65,9 @@ jobs:
         - run:
             name: Install Gems
             command: |
-              if ! bundle check --path=vendor/bundle; then
-                bundle install --path=vendor/bundle --jobs=4 --retry=3
+              bundle config set path 'vendor/bundle'
+              if ! bundle check; then
+                bundle install --jobs=4 --retry=3
                 bundle clean
               fi
         - save_cache:
@@ -74,13 +85,15 @@ jobs:
 workflows:
   build:
     jobs:
-      - lint
+      - lint:
+          context: Salsify
       - test:
+          context: Salsify
           matrix:
             parameters:
               gemfile:
                 - "Gemfile"
               ruby_version:
-                - "2.6.8"
-                - "2.7.4"
-                - "3.0.2"
+                - "3_3_14"
+                - "3_4_13"
+                - "4_0_10"
