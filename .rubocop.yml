@@ -6,7 +6,6 @@ inherit_from: .rubocop_todo.yml
 AllCops:
   TargetRubyVersion: 2.6
   Exclude:
-    # rubocop 1.0's Layout/BlockAlignment crashes on this single-block file
     - '.simplecov'
     - 'scripts/**/*'
     - 'vendor/**/*'
